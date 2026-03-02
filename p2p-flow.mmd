@@ -1,0 +1,50 @@
+sequenceDiagram
+    participant A as Peer A (Uploader)
+    participant S as Server (FastAPI + WS)
+    participant B as Peer B (Downloader)
+
+    Note over A,B: ── Room Join ──
+    A->>S: GET /rooms/{id}  (HTTP)
+    S-->>A: room info (has_password?)
+    A->>S: WS connect /ws/{room_id}
+    S-->>A: { type: "hello", peer_id: "aaa" }
+    S-->>A: { type: "user_count", count: 1 }
+
+    B->>S: WS connect /ws/{room_id}
+    S-->>B: { type: "hello", peer_id: "bbb" }
+    S-->>A: { type: "user_joined" }
+    S-->>B: { type: "user_count", count: 2 }
+
+    Note over A,B: ── File Sharing ──
+    A->>A: User drops file → stored in localFilesRef (RAM only)
+    A->>S: WS: { type: "file_available", file: { id, name, size } }
+    S-->>B: WS broadcast: { type: "file_available", file: { id, name, size, peer_id:"aaa" } }
+    B->>B: Adds file to UI list (available: true)
+
+    Note over A,B: ── Download (WebRTC handshake via WS relay) ──
+    B->>S: WS: { type: "file_request", to:"aaa", file_id, conn_id }
+    S-->>A: WS relay: { type: "file_request", from:"bbb", file_id, conn_id }
+
+    A->>A: createRTCPeerConnection + DataChannel
+    A->>S: WS: { type: "webrtc_offer", to:"bbb", conn_id, sdp }
+    S-->>B: WS relay: { type: "webrtc_offer", from:"aaa", conn_id, sdp }
+
+    B->>B: setRemoteDescription(offer) + createAnswer
+    B->>S: WS: { type: "webrtc_answer", to:"aaa", conn_id, sdp }
+    S-->>A: WS relay: { type: "webrtc_answer", conn_id, sdp }
+
+    A->>S: WS: { type: "webrtc_ice", to:"bbb", candidate }
+    S-->>B: WS relay ICE candidate
+    B->>S: WS: { type: "webrtc_ice", to:"aaa", candidate }
+    S-->>A: WS relay ICE candidate
+
+    Note over A,B: ── Direct P2P Transfer (no server) ──
+    A-->>B: DataChannel: JSON header { name, size, type }
+    A-->>B: DataChannel: binary chunks (16 KB each)
+    A-->>B: DataChannel: JSON { done: true }
+    B->>B: Blob.reassemble → browser download
+
+    Note over A,B: ── Peer Disconnect ──
+    A->>S: WS disconnect
+    S-->>B: { type: "user_left", peer_id: "aaa" }
+    B->>B: marks A's files as available:false → "owner offline"

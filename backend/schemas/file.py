@@ -13,6 +13,7 @@ class FileResponse(BaseModel):
     original_filename: str
     size: int
     content_type: str
+    checksum: str | None = None   # SHA-256 hex digest; None for legacy files
     uploaded_at: datetime
 
     model_config = {"from_attributes": True}

@@ -25,6 +25,7 @@ class Room(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     files = relationship("File", back_populates="room", cascade="all, delete-orphan", lazy="selectin")
+    otps = relationship("RoomOTP", back_populates="room", cascade="all, delete-orphan", lazy="noload")
 
     @property
     def is_expired(self) -> bool:

@@ -23,6 +23,8 @@ class File(Base):
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
     size: Mapped[int] = mapped_column(BigInteger, nullable=False)
     content_type: Mapped[str] = mapped_column(String(128), default="application/octet-stream")
+    # SHA-256 hex digest of full file, computed during upload
+    checksum: Mapped[str | None] = mapped_column(String(64), nullable=True)
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

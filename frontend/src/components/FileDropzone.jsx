@@ -30,13 +30,22 @@ export default function FileDropzone({ onDrop, uploading, progress }) {
       {uploading ? (
         <div className="space-y-3">
           <Loader2 className="mx-auto animate-spin text-brand-400" size={28} />
-          <p className="text-sm text-gray-400">Uploading… {progress}%</p>
+          <p className="text-sm text-gray-400">
+            {progress < 95
+              ? `Sending chunks… ${progress}%`
+              : progress < 100
+                ? "Verifying integrity…"
+                : "Done!"}
+          </p>
           <div className="w-full bg-gray-800 rounded-full h-2">
             <div
               className="bg-brand-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
+          <p className="text-xs text-gray-600">
+            Each chunk is CRC-32 checked · Full file SHA-256 verified
+          </p>
         </div>
       ) : (
         <div>

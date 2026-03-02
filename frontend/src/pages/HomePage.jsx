@@ -110,20 +110,40 @@ export default function HomePage() {
         >
           <div className="flex items-center gap-3 mb-5">
             <div className="p-2.5 bg-purple-600/15 rounded-xl">
-              <QrCode className="text-purple-400" size={22} />
+              <QrCode className="text-purple-400" size={25} />
             </div>
             <h2 className="text-xl font-bold">Join Room</h2>
           </div>
-          <p className="text-gray-400 mb-6">
-            Scan a QR code or enter a room ID to join an existing session and
-            start sharing files.
-          </p>
+          <div className="mb-10 mt-12 justify-center align-middle space-y-5 text-sm text-gray-400">
+            <div className="flex items-start gap-2">
+              <span className="mt-1 h-2 w-2 rounded-full bg-purple-400"></span>
+              <p>Scan a QR code shared by the room owner</p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <span className="mt-1 h-2 w-2 rounded-full bg-purple-400"></span>
+              <p>
+                Enter the unique{" "}
+                <span className="text-white font-medium">Room ID</span>
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <span className="mt-1 h-2 w-2 rounded-full bg-purple-400"></span>
+              <p>
+                Use the secure{" "}
+                <span className="text-purple-400 font-semibold">
+                  6-digit one-time code (OTP)
+                </span>
+              </p>
+            </div>
+          </div>
           <div className="space-y-3">
             <button
               onClick={() => setShowJoin(true)}
               className="btn-primary w-full"
             >
-              Enter Room ID
+              Join Room
             </button>
           </div>
         </div>
