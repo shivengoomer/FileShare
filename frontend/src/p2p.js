@@ -13,6 +13,8 @@
  *   6. Downloader reassembles Blob → browser download.
  */
 
+import { createUUID } from "./utils/uuid";
+
 const ICE_SERVERS = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
@@ -199,7 +201,7 @@ export class P2PManager {
    * @returns {Promise<{blob: Blob, filename: string}>}
    */
   requestFile(toPeerId, fileId, onProgress) {
-    const connId = crypto.randomUUID();
+    const connId = createUUID();
 
     return new Promise((resolve, reject) => {
       // Store callbacks BEFORE sending so even a very fast reply finds them

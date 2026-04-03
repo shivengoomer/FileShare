@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// Get base URL from environment (falls back to /rooms for relative path)
+const baseURL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/rooms`
+  : "/rooms";
+
 const api = axios.create({
-  baseURL: "/rooms",
+  baseURL,
   timeout: 30000,
 });
 
@@ -70,9 +75,21 @@ export function getQrImageUrl(roomId) {
 }
 
 export function connectWebSocket(roomId) {
-  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  const host = window.location.host;
-  return new WebSocket(`${protocol}://${host}/ws/${roomId}`);
+  let wsUrl;
+
+  if (import.meta.env.VITE_API_BASE_URL) {
+    // Use environment-configured backend
+    const apiUrl = new URL(import.meta.env.VITE_API_BASE_URL);
+    const wsProtocol = apiUrl.protocol === "https:" ? "wss" : "ws";
+    wsUrl = `${wsProtocol}://${apiUrl.host}/ws/${roomId}`;
+  } else {
+    // Use relative path (same host as frontend)
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.host;
+    wsUrl = `${protocol}://${host}/ws/${roomId}`;
+  }
+
+  return new WebSocket(wsUrl);
 }
 
 // ---------------------------------------------------------------------------

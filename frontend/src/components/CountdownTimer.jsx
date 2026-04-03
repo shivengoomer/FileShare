@@ -28,6 +28,8 @@ export default function CountdownTimer({ expiresAt, onExpire }) {
   const isLow = new Date(expiresAt).getTime() - Date.now() < 5 * 60 * 1000;
 
   return (
-    <span className={isLow ? "text-red-400 font-medium" : ""}>{remaining}</span>
+    <span className={isLow ? "font-medium text-amber-400" : "text-[#F9FAFB]"}>
+      {remaining}
+    </span>
   );
 }
