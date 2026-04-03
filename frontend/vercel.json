@@ -1,9 +1,4 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "env": {
-    "VITE_API_BASE_URL": "@VITE_API_BASE_URL"
-  },
   "rewrites": [
     {
       "source": "/rooms/:path*",
@@ -14,27 +9,7 @@
       "destination": "$VITE_API_BASE_URL/ws/:path*"
     },
     {
-      "source": "/health",
-      "destination": "$VITE_API_BASE_URL/health"
-    },
-    {
-      "source": "/server-info",
-      "destination": "$VITE_API_BASE_URL/server-info"
-    },
-    {
-      "source": "/openapi.json",
-      "destination": "$VITE_API_BASE_URL/openapi.json"
-    },
-    {
-      "source": "/docs",
-      "destination": "$VITE_API_BASE_URL/docs"
-    },
-    {
-      "source": "/redoc",
-      "destination": "$VITE_API_BASE_URL/redoc"
-    },
-    {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
