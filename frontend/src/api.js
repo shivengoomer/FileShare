@@ -63,15 +63,15 @@ export async function listFiles(roomId) {
 }
 
 export function getDownloadUrl(roomId, fileId) {
-  return `/rooms/${roomId}/download/${fileId}`;
+  return `${import.meta.env.VITE_API_BASE_URL}/rooms/${roomId}/download/${fileId}`;
 }
 
 export function getDownloadAllUrl(roomId) {
-  return `/rooms/${roomId}/download-all`;
+  return `${import.meta.env.VITE_API_BASE_URL}/rooms/${roomId}/download-all`;
 }
 
 export function getQrImageUrl(roomId) {
-  return `/rooms/${roomId}/qr`;
+  return `${import.meta.env.VITE_API_BASE_URL}/rooms/${roomId}/qr`;
 }
 
 export function connectWebSocket(roomId) {
@@ -144,7 +144,7 @@ async function uploadOneFile(roomId, file, onProgress) {
   const totalChunks = Math.ceil(bytes.length / CHUNK_SIZE) || 1;
 
   // Step 1 — init
-  const initRes = await api.post(`/rooms/${roomId}/upload/init`, null, {
+  const initRes = await api.post(`/${roomId}/upload/init`, null, {
     params: {
       filename: file.name,
       content_type: file.type || "application/octet-stream",
@@ -162,7 +162,7 @@ async function uploadOneFile(roomId, file, onProgress) {
     while (attempt < MAX_RETRIES) {
       try {
         await api.put(
-          `/rooms/${roomId}/upload/${upload_id}/chunk/${i}`,
+          `/${roomId}/upload/${upload_id}/chunk/${i}`,
           chunkBytes.buffer,
           {
             params: { crc32: chunkCrc },
@@ -185,7 +185,7 @@ async function uploadOneFile(roomId, file, onProgress) {
 
   // Step 3 — complete (server assembles + verifies SHA-256)
   const completeRes = await api.post(
-    `/rooms/${roomId}/upload/${upload_id}/complete`,
+    `/${roomId}/upload/${upload_id}/complete`,
     null,
     { params: { sha256: fileSha256 } },
   );
