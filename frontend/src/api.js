@@ -144,7 +144,7 @@ async function uploadOneFile(roomId, file, onProgress) {
   const totalChunks = Math.ceil(bytes.length / CHUNK_SIZE) || 1;
 
   // Step 1 — init
-  const initRes = await axios.post(`/rooms/${roomId}/upload/init`, null, {
+  const initRes = await api.post(`/rooms/${roomId}/upload/init`, null, {
     params: {
       filename: file.name,
       content_type: file.type || "application/octet-stream",
@@ -161,7 +161,7 @@ async function uploadOneFile(roomId, file, onProgress) {
     let attempt = 0;
     while (attempt < MAX_RETRIES) {
       try {
-        await axios.put(
+        await api.put(
           `/rooms/${roomId}/upload/${upload_id}/chunk/${i}`,
           chunkBytes.buffer,
           {
@@ -184,7 +184,7 @@ async function uploadOneFile(roomId, file, onProgress) {
   }
 
   // Step 3 — complete (server assembles + verifies SHA-256)
-  const completeRes = await axios.post(
+  const completeRes = await api.post(
     `/rooms/${roomId}/upload/${upload_id}/complete`,
     null,
     { params: { sha256: fileSha256 } },
